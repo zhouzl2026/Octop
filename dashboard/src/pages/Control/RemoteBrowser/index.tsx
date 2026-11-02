@@ -1172,7 +1172,7 @@ export default function RemoteBrowserPage({
         title={t("remoteBrowser.notInstalled", "未检测到可用浏览器")}
         subTitle={t(
           "remoteBrowser.notInstalledHint",
-          "Octop 需要浏览器才能帮你自动打开网页、填写表单和截图。点击下方按钮即可自动安装，无需手动配置。",
+          "WinAgent 需要浏览器才能帮你自动打开网页、填写表单和截图。点击下方按钮即可自动安装，无需手动配置。",
         )}
         style={{ padding: "8px 0" }}
       />

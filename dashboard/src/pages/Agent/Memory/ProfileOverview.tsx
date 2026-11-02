@@ -197,7 +197,7 @@ export default function ProfileOverview({
           items={state.aboutMe.map((a) => atomToConceptItem(a, t, timeZone))}
           emptyHint={t(
             "memory.terminal.emptyAboutMe",
-            "Octop 还在了解你，多聊几次就会补上",
+            "WinAgent 还在了解你，多聊几次就会补上",
           )}
           onViewAll={onViewAll}
         />

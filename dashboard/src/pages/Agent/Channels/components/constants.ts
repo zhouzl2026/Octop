@@ -106,7 +106,7 @@ export const CHANNEL_LABELS: Record<ChannelKey, string> = {
   telegram: "Telegram",
   dashboard: "控制台",
   agentchat: "AgentChat",
-  octopbot: "OctopBot",
+  octopbot: "WinAgent",
 };
 
 export const CHANNEL_ICONS: Record<ChannelKey, string> = {
