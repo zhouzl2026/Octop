@@ -88,6 +88,8 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    // WinAgent 子路径部署（T1.2a）：资产走 /winagent/ 前缀
+    base: "/winagent/",
     build: {
       outDir: path.resolve(__dirname, "../src/octop/dashboard"),
       emptyOutDir: true,

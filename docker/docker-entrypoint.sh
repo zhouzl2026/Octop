@@ -202,7 +202,7 @@ octop_entrypoint_main() {
 
     if [ $# -eq 0 ]; then
         echo "[entrypoint] 正在启动 Octop，端口 $PORT..."
-        exec octop run --host 0.0.0.0 --port "$PORT"
+        exec octop run --host 0.0.0.0 --port "$PORT" --root-path /winagent/
     fi
 
     if [ "$1" = "octop" ]; then
