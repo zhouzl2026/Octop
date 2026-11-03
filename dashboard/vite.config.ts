@@ -55,7 +55,7 @@ function suppressViteDisconnectReload(): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   // Empty = same-origin; frontend and backend served together, no hardcoded host.
-  const apiBaseUrl = env.BASE_URL ?? "";
+  const apiBaseUrl = env.BASE_URL ?? "/winagent/";
   // Allow overriding the backend port via VITE_API_PORT env variable (default: 8088)
   const apiPort = process.env.VITE_API_PORT ?? env.VITE_API_PORT ?? "8088";
 
