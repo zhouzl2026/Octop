@@ -209,6 +209,11 @@ export function retainDisconnectedBridgeAgents<T extends BridgeShadowAgent>(
   next: T[],
   liveConnectionIds: ReadonlySet<string>,
 ): T[] {
+  // Defensive: a proxy/portal misroute can hand back an HTML page (string)
+  // instead of the agent array — degrade to the previous list instead of
+  // crashing the whole dashboard ("next.filter is not a function").
+  if (!Array.isArray(next)) return Array.isArray(prev) ? prev : [];
+  if (!Array.isArray(prev)) prev = [];
   const connectedConnIds = new Set(
     next
       .filter((agent) => agent.bridge && agent.bridge_connection_id)

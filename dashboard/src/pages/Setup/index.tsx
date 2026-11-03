@@ -27,6 +27,7 @@ import {
   STEP_FINISH,
 } from "./wizardClient";
 import styles from "./setup.module.less";
+import { assetPath } from "@/utils/asset-path";
 
 const { Text } = Typography;
 
@@ -259,8 +260,8 @@ export default function SetupPage() {
               <img
                 src={
                   isDark
-                    ? "/logo_horizontal_white.png"
-                    : "/logo_horizontal_dark.png"
+                    ? assetPath("/logo_horizontal_white.png")
+                    : assetPath("/logo_horizontal_dark.png")
                 }
                 alt="WinAgent"
                 className={styles.wizardHeaderLogo}

@@ -311,11 +311,17 @@ const SESSION_UNAUTHORIZED_CODES = new Set(["AUTH_FAILED", "TOKEN_EXPIRED"]);
  */
 function handleUnauthorized(): void {
   if (_redirectingToLogin) return;
-  const path = window.location.pathname;
+  // Subpath builds (BASE_URL "/winagent/") serve the app at /winagent/*;
+  // compare against the in-app path and redirect INSIDE the subpath, or a
+  // session expiry would bounce the user out to the portal root.
+  const baseUrl = import.meta.env.BASE_URL || "/";
+  const inAppPath = baseUrl !== "/" && window.location.pathname.startsWith(baseUrl)
+    ? window.location.pathname.slice(baseUrl.length)
+    : window.location.pathname;
   if (
-    path.startsWith("/setup") ||
-    path.startsWith("/login") ||
-    path.startsWith("/invite")
+    inAppPath.startsWith("/setup") ||
+    inAppPath.startsWith("/login") ||
+    inAppPath.startsWith("/invite")
   )
     return;
   _redirectingToLogin = true;
@@ -326,7 +332,7 @@ function handleUnauthorized(): void {
   if (takenOver) return;
 
   markNavigatingAway();
-  window.location.replace("/login");
+  window.location.replace(`${baseUrl}login`);
 }
 
 /**
@@ -421,7 +427,13 @@ export async function request<T = unknown>(
 
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("application/json")) {
-    return (await response.text()) as unknown as T;
+    const text = await response.text();
+    // A SPA-fallback / proxy misroute serves the index page for API paths;
+    // surfacing a readable error beats crashing downstream on string.filter.
+    if (/^\s*<(!doctype|html)/i.test(text)) {
+      throw new Error(`API ${path} returned HTML — check proxy/route mapping`);
+    }
+    return text as unknown as T;
   }
 
   return (await response.json()) as T;

@@ -1,3 +1,4 @@
+import https from "node:https";
 import { webcrypto } from "node:crypto";
 import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
@@ -58,6 +59,18 @@ export default defineConfig(({ mode }) => {
   const apiBaseUrl = env.BASE_URL ?? "/winagent/";
   // Allow overriding the backend port via VITE_API_PORT env variable (default: 8088)
   const apiPort = process.env.VITE_API_PORT ?? env.VITE_API_PORT ?? "8088";
+  // Dev-only: proxy /api to a remote backend (e.g. https://host:18321/winagent)
+  // so local previews run against real data. Unset in normal/production builds.
+  const apiTarget =
+    process.env.VITE_API_TARGET ?? env.VITE_API_TARGET ?? "";
+  // Keep-alive upstream agent: the dashboard fires a burst of boot probes and
+  // every proxied request otherwise opens a fresh TLS connection to the
+  // remote, which can trip resets under browser-level concurrency.
+  const httpsKeepAlive = new https.Agent({
+    keepAlive: true,
+    maxSockets: 32,
+    keepAliveMsecs: 30_000,
+  });
 
   const isProd = mode === "production";
   const analyze = env.ANALYZE === "true";
@@ -316,13 +329,32 @@ export default defineConfig(({ mode }) => {
       },
       proxy: {
         "/api": {
-          target: `http://127.0.0.1:${apiPort}`,
+          target: apiTarget || `http://127.0.0.1:${apiPort}`,
+          ...(apiTarget.startsWith("https") ? { agent: httpsKeepAlive } : {}),
           changeOrigin: true,
+          // Remote targets may use self-signed certificates.
+          secure: false,
           // Preserve the browser-facing origin so OAuth callbacks do not point
           // at the proxy target (127.0.0.1:8088).
           xfwd: true,
           // Only proxy API websockets — do not steal Vite's HMR upgrade on `/`.
           ws: true,
+        },
+        // Dev: BASE_URL is always "/winagent/", so the app requests
+        // /winagent/api/* — without this entry the request misses the proxy,
+        // Vite SPA-fallbacks it to index.html, and `request()` hands back an
+        // HTML string ("next.filter is not a function" in AgentContext).
+        // Strip one /winagent prefix so both proxy targets line up:
+        //   http://127.0.0.1:8088 + /api/...
+        //   https://host:18321/winagent + /api/...
+        "/winagent/api": {
+          target: apiTarget || `http://127.0.0.1:${apiPort}`,
+          ...(apiTarget.startsWith("https") ? { agent: httpsKeepAlive } : {}),
+          changeOrigin: true,
+          secure: false,
+          xfwd: true,
+          ws: true,
+          rewrite: (p: string) => p.replace(/^\/winagent/, ""),
         },
       },
     },

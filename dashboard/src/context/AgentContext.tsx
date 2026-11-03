@@ -428,6 +428,12 @@ export function AgentProvider({ children }: { children: ReactNode }) {
       setError(null);
       try {
         const { agents: list, liveConnectionIds } = await fetchAgents();
+        // Guard against a misrouted/HTML response masquerading as the list.
+        if (!Array.isArray(list)) {
+          throw new Error(
+            "agents API returned unexpected payload (check proxy/routes)",
+          );
+        }
         // Only update state when content actually changed, to prevent
         // unnecessary re-renders of every component subscribed to this context
         // (the chat page polls every 10 s to refresh unread badges).

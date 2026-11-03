@@ -43,6 +43,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   const [authed, setAuthed] = useState(false);
   const [user, setUser] = useState<OctopUser | null>(null);
   const [offline, setOffline] = useState(false);
+  const [offlineDetail, setOfflineDetail] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
@@ -87,6 +88,17 @@ export default function AuthGuard({ children }: AuthGuardProps) {
         } catch (err) {
           if (cancelled) return;
           if (isNetworkFetchError(err)) {
+            if (attempt < 2) {
+              attempt += 1;
+              setTimeout(
+                () => {
+                  if (!cancelled) void check();
+                },
+                attempt === 1 ? 900 : 1800,
+              );
+              return;
+            }
+            setOfflineDetail(err instanceof Error ? err.message : String(err));
             setOffline(true);
             setChecking(false);
             setAuthed(false);
@@ -99,14 +111,27 @@ export default function AuthGuard({ children }: AuthGuardProps) {
         if (cancelled) return;
         // Backend unreachable (or setup/status otherwise failed) — do not
         // mount MainLayout with a null user (that produced a blank white
-        // shell with no recovery action).
+        // shell with no recovery action). One silent auto-retry first: a
+        // dev-proxy / remote TLS blip should not flash the offline panel.
         void err;
+        if (isNetworkFetchError(err) && attempt < 2) {
+          attempt += 1;
+          setTimeout(
+            () => {
+              if (!cancelled) void check();
+            },
+            attempt === 1 ? 900 : 1800,
+          );
+          return;
+        }
+        setOfflineDetail(err instanceof Error ? err.message : String(err));
         setOffline(true);
         setChecking(false);
         setAuthed(false);
       }
     };
 
+    let attempt = 0;
     void check();
     return () => {
       cancelled = true;
@@ -116,6 +141,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   if (offline) {
     return (
       <BootOfflinePanel
+        detail={offlineDetail}
         onRetry={() => {
           setChecking(true);
           setAuthed(false);

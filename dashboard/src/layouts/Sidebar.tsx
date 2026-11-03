@@ -38,6 +38,7 @@ import SidebarNavCustomizer from "./SidebarNavCustomizer";
 import styles from "./Sidebar.module.less";
 import { typeSize } from "../utils/mobileTypeScale";
 import { DESKTOP_DRAG_REGION_CLASS } from "../utils/desktopChrome";
+import { assetPath } from "@/utils/asset-path";
 
 const NAV_GROUPS_STORAGE_KEY = "octop:sidebar-nav-groups";
 const LEGACY_COLLAPSED_GROUP_IDS: Record<string, string> = {
@@ -439,9 +440,9 @@ export default function Sidebar({
   const chatRailOpen = showChatRailToggle && onChatPath && chatSidebarOpen;
 
   const isRailCollapsed = collapsed && !isMobile;
-  const wordmarkSrc = isDark
-    ? "/logo_horizontal_white.png"
-    : "/logo_horizontal_dark.png";
+  const wordmarkSrc = assetPath(
+    isDark ? "/logo_horizontal_white.png" : "/logo_horizontal_dark.png",
+  );
 
   const selectMinimalPane = useCallback(
     (pane: MinimalNavPane, opts?: { expand?: boolean }) => {
@@ -509,12 +510,12 @@ export default function Sidebar({
   const brandInner = (
     <>
       <img
-        src={isRailCollapsed ? "/pwa-192.png" : wordmarkSrc}
+        src={isRailCollapsed ? assetPath("/pwa-192.png") : wordmarkSrc}
         alt="WinAgent"
         style={{
-          height: isRailCollapsed ? 32 : isMobile ? 38 : 36,
-          width: isRailCollapsed ? 32 : "auto",
-          maxWidth: isRailCollapsed ? 32 : isMobile ? 190 : 160,
+          height: isRailCollapsed ? 28 : isMobile ? 28 : 26,
+          width: isRailCollapsed ? 28 : "auto",
+          maxWidth: isRailCollapsed ? 28 : isMobile ? 190 : 160,
           objectFit: "contain",
           display: "block",
           flexShrink: 0,

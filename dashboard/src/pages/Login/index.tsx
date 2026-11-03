@@ -32,6 +32,7 @@ import googleIcon from "../../assets/providers/google.svg";
 import CaptchaField, { type CaptchaFieldHandle } from "./CaptchaField";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import { type PublicCaptchaConfig } from "./captchaAdapters";
+import { assetPath } from "@/utils/asset-path";
 
 function providerLabel(
   provider: OauthProviderStatus,
@@ -271,13 +272,15 @@ export default function LoginPage() {
       >
         <img
           src={
-            isDark ? "/logo_horizontal_white.png" : "/logo_horizontal_dark.png"
+            assetPath(
+              isDark ? "/logo_horizontal_white.png" : "/logo_horizontal_dark.png",
+            )
           }
           alt="WinAgent"
           style={{
-            height: 48,
+            height: 28,
             width: "auto",
-            maxWidth: 260,
+            maxWidth: 200,
             objectFit: "contain",
             display: "block",
           }}
