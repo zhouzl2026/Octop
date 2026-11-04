@@ -356,6 +356,35 @@ export default defineConfig(({ mode }) => {
           ws: true,
           rewrite: (p: string) => p.replace(/^\/winagent/, ""),
         },
+        // Top-level (non-/api) control-plane endpoints: /setup/*, /auth/*,
+        // /agent/health, /desktop/status, /mobile/status, /onnx-models/status,
+        // /update/status. Without these the dev server SPA-fallbacks them to
+        // index.html and `request()` hands back HTML ("API /setup/status
+        // returned HTML"). Trailing slashes keep SPA page routes — the app
+        // routes /winagent/setup and /winagent/login have no third segment —
+        // out of the proxy, so page navigation still hits the SPA.
+        ...Object.fromEntries(
+          [
+            "/setup/",
+            "/auth/",
+            "/agent/",
+            "/desktop/",
+            "/mobile/",
+            "/onnx-models/",
+            "/update/",
+          ].map((p) => [
+            `/winagent${p}`,
+            {
+              target: apiTarget || `http://127.0.0.1:${apiPort}`,
+              ...(apiTarget.startsWith("https") ? { agent: httpsKeepAlive } : {}),
+              changeOrigin: true,
+              secure: false,
+              xfwd: true,
+              ws: true,
+              rewrite: (rp: string) => rp.replace(/^\/winagent/, ""),
+            },
+          ]),
+        ),
       },
     },
     optimizeDeps: {

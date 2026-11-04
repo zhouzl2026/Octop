@@ -12,20 +12,6 @@ import {
 } from "antd";
 import { message } from "@/utils/antdMessage";
 
-import {
-  LogOut,
-  ChevronDown,
-  ChevronUp,
-  Settings,
-  Palette,
-  CircleHelp,
-  Github,
-  RefreshCw,
-  KeyRound,
-  Lock,
-  LockOpen,
-  SlidersHorizontal,
-} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { authApi } from "../api/modules/auth";
@@ -55,7 +41,6 @@ import {
 } from "../pages/Admin/Users/ProfileAvatar";
 import styles from "./AvatarDropdown.module.less";
 
-const GITHUB_URL = "https://github.com/TencentCloud/Octop";
 const HELP_FEEDBACK_URL = "https://octop.cloud";
 const APP_OAUTH_KINDS = new Set(["feishu", "dingtalk", "wecom"]);
 
@@ -378,17 +363,6 @@ export default function AvatarDropdown({
       >
         <CircleHelp size={16} strokeWidth={1.8} />
         <span>{t("account.helpFeedback")}</span>
-      </a>
-
-      <a
-        className={styles.menuItem}
-        href={GITHUB_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => setMenuOpen(false)}
-      >
-        <Github size={16} strokeWidth={1.8} />
-        <span>{t("account.projectUrl")}</span>
       </a>
 
       {onCustomizeNav ? (

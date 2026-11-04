@@ -10,6 +10,7 @@ import type { MBTIType } from "../../../../api/types";
 import { useAgent } from "../../../../context/AgentContext";
 import MBTITest from "./MBTITest";
 import styles from "./MBTISelector.module.less";
+import { assetPath } from "@/utils/asset-path";
 
 /* ------------------------------------------------------------------ */
 /*  Dimension bar — horizontal axis visualisation                     */
@@ -517,7 +518,7 @@ export default function MBTISelector({
                       <div className={styles.typeCardHeader}>
                         <img
                           className={styles.typeAvatar}
-                          src={`/assets/mbti/${code}.svg`}
+                          src={assetPath(`/assets/mbti/${code}.svg`)}
                           alt={code}
                           style={{ background: `${type.color}14` }}
                         />
@@ -594,7 +595,7 @@ export default function MBTISelector({
               <div className={styles.modalHeaderInner}>
                 <img
                   className={styles.modalAvatar}
-                  src={`/assets/mbti/${selectedType.code}.svg`}
+                  src={assetPath(`/assets/mbti/${selectedType.code}.svg`)}
                   alt={selectedType.code}
                 />
                 <div>

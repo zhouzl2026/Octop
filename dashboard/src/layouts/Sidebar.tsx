@@ -3,8 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import AvatarDropdown from "../components/AvatarDropdown";
-import AppVersionBadge from "../components/AppVersionBadge";
-import CurrentVersionBadge from "../components/CurrentVersionBadge";
 import { ArrowRightLeft, ChevronDown, X } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { useLayoutMode } from "../context/LayoutModeContext";
@@ -513,7 +511,9 @@ export default function Sidebar({
         src={isRailCollapsed ? assetPath("/pwa-192.png") : wordmarkSrc}
         alt="WinAgent"
         style={{
-          height: isRailCollapsed ? 28 : isMobile ? 28 : 26,
+          // Match the WinTurbo sider standard: wordmark at 22.5px height
+          // (--sider-logo-size 18px × 1.25 padded artwork).
+          height: isRailCollapsed ? 28 : 22.5,
           width: isRailCollapsed ? 28 : "auto",
           maxWidth: isRailCollapsed ? 28 : isMobile ? 190 : 160,
           objectFit: "contain",
@@ -523,10 +523,20 @@ export default function Sidebar({
         }}
       />
       {!isRailCollapsed && !isMobile && (
-        <>
-          <CurrentVersionBadge isMobile={isMobile} />
-          <AppVersionBadge isMobile={isMobile} />
-        </>
+        <span
+          style={{
+            // WinTurbo standard: product name in brand red, optically aligned
+            // with the 云宏 glyphs (~68% of the wordmark height).
+            fontSize: 15,
+            fontWeight: 700,
+            letterSpacing: 0.5,
+            color: "#c80810",
+            whiteSpace: "nowrap",
+            transform: "translateY(calc(18px * 0.22))",
+          }}
+        >
+          WinAgent
+        </span>
       )}
     </>
   );
