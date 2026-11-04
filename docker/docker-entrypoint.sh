@@ -202,7 +202,10 @@ octop_entrypoint_main() {
 
     if [ $# -eq 0 ]; then
         echo "[entrypoint] 正在启动 Octop，端口 $PORT..."
-        exec octop run --host 0.0.0.0 --port "$PORT" --root-path /winagent/
+        # NOTE: `octop run` has no --root-path option (CLI never implemented
+        # it). Subpath behavior is handled by nginx prefix stripping + the
+        # dashboard's baked-in /winagent/ base — do not pass the flag here.
+        exec octop run --host 0.0.0.0 --port "$PORT"
     fi
 
     if [ "$1" = "octop" ]; then
